@@ -3,5 +3,5 @@
 
 
 ```bash
-nohup uvicorn app.main:app --reload --workers 3
+nohup uvicorn app.main:app --reload --workers 3 &
 ```
