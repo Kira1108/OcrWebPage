@@ -38,7 +38,7 @@ get_page_result(json_data)
 ```
 
 
-```json
+```python
 {'id': '123',
     'code': 1,
     'img_result': [
