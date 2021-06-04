@@ -1,0 +1,11 @@
+cnocr
+cnstd
+numpy
+pandas
+uvicorn
+fastapi
+sklearn
+matplotlib
+seaborn
+pyyaml
+beautifulsoup4
