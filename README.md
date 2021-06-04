@@ -36,3 +36,28 @@ json_data = {
 
 get_page_result(json_data)
 ```
+
+
+```json
+{'id': '123',
+    'code': 1,
+    'img_result': [
+        {'path': 'C:/Users/wanghuan/Desktop/OcrSentence/app/datasets/test_imgs/cece.png',
+      'is_contain': True,
+      'detail': {'你丫就是个傻逼': True,
+       '-': False,
+       '<-': False,
+       '枪支弹药买卖': True,
+       '来看一下': False,
+       '激情少妇点击观看视频': True,
+       '今天天气不错': False
+            },
+      'status': 'success'
+        }
+    ],
+    'text_result': {'is_contain': True,
+     'detail': {'你是傻逼吧': True, '枪支弹药': True, '天气不错哟': False
+        }
+    }
+}
+```
