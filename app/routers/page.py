@@ -9,9 +9,11 @@ from urllib.parse import quote
 import logging
 import glob
 import os
+import base64
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
 
 
 router = APIRouter(
@@ -24,6 +26,12 @@ class UrlInfo(BaseModel):
     id:str
     text:List[str]
     paths:List[str]
+
+def encode_base64(message):
+    message_bytes = message.encode('utf-8')
+    base64_bytes = base64.b64encode(message_bytes)
+    base64_message = base64_bytes.decode('utf-8')
+    return base64_message
 
 
 def _parse(urlInfo):
@@ -72,7 +80,7 @@ def _parse(urlInfo):
             "code":0
         }
 
-    
+
 
 @router.post("/img_paths")
 async def parse_page(urlInfo:UrlInfo):
@@ -95,7 +103,7 @@ class UrlFolderInfo(BaseModel):
 
 
 def _parse_folder(UrlFolderInfo):
-    
+
     try:
 
         img_results = []
@@ -124,9 +132,17 @@ def _parse_folder(UrlFolderInfo):
         text_result = text_parser.parse(UrlFolderInfo.text)
         logger.info('Text detection done')
 
+        try:
+            img_overall= any([r['is_contain'] for r in img_results])
+            text_overall = any(text_result.values())
+            contain_sensitive = img_overall or text_overall
+        except:
+            logger.error("overall info error")
+
         return {
             "id":UrlFolderInfo.id,
             "code":1,
+            "contain_sensitive":contain_sensitive,
             'img_result':img_results,
             "text_result":{
                 "is_contain":any(text_result.values()),
@@ -141,12 +157,13 @@ def _parse_folder(UrlFolderInfo):
         }
 
 @router.post("/")
-async def parse_page(urlFolderInfo:UrlFolderInfo):
+async def parse_page_folder(urlFolderInfo:UrlFolderInfo):
     result = _parse_folder(urlFolderInfo)
     logger.info('Writing Result to DataBase')
 
     try:
-        sql = "update URL set url_result = '{}' where id = '{}'".format(json.dumps(result, ensure_ascii=False), urlFolderInfo.id)
+        message = encode_base64(json.dumps(result, ensure_ascii=False))
+        sql = "update URL set url_result = '{}' where id = '{}'".format(message, urlFolderInfo.id)
         db.execute(sql)
     except Exception as e:
         logger.error("Error Writing DataBase")

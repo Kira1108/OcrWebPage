@@ -4,22 +4,27 @@ from cnocr import CnOcr
 import cv2
 from abc import ABC, abstractmethod
 import logging
+from PIL import Image
+import cairosvg
+import io
+import matplotlib.pyplot as plt
+import numpy as np
 
 std = CnStd()
 cn_ocr = CnOcr()
 logger = logging.getLogger(__name__)
 
 class Reader(ABC):
-    
+
     @abstractmethod
     def read(self,Any):
         pass
-    
+
 class Processor(ABC):
     @abstractmethod
     def process(self, Any):
         pass
-    
+
 class Recgonizer(ABC):
     @abstractmethod
     def ocr(self, Any):
@@ -28,14 +33,32 @@ class Recgonizer(ABC):
 class ImageReader(Reader):
     def read(self,path):
         logger.info(f'read Image from {path}')
+
+        if path.endswith('.svg'):
+            return self._handle_svg(path)
+
         img = cv2.imread(path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         return img
 
+    def _handle_svg(self,path):
+        try:
+            stream = io.BytesIO(cairosvg.svg2png(url = path,))
+            img = Image.open(stream)
+
+            background = Image.new("RGB", img.size, (255, 255, 255))
+            background.paste(img, mask=img.split()[3])
+            return np.array(background)
+
+        except Exception as e:
+            logger.error("Converting svg error {}".format(path))
+        return None
+
+
 class TextLocalizer(Processor):
     def _detect(self, img):
         return img,std.detect(img)
-    
+
     def _crop(self, img, boxes):
         logger.info(f"find {len(boxes)} text boxes")
         imgs = []
@@ -46,34 +69,34 @@ class TextLocalizer(Processor):
             sub_img = img[ymin:ymax, xmin:xmax]
             imgs.append(sub_img)
         return imgs
-    
+
     def process(self,img):
-        return self._crop(*self._detect(img)) 
+        return self._crop(*self._detect(img))
 
 
 class OcrSingleLine(Recgonizer):
     def ocr(self, img):
         return cn_ocr.ocr_for_single_line(img)
-    
-    
+
+
 class OcrCrops(Recgonizer):
     def ocr(self, imgs):
         logger.info("ocr texts on all crops")
         return [''.join(cn_ocr.ocr_for_single_line(img)) for img in imgs]
-    
-    
+
+
 class ImageToText():
-    ''' 
+    '''
         reader = ImageReader()
         localizer = TextLocalizer()
         recgonizer = OcrCrops()
     '''
-    
+
     def __init__(self, reader = None, localizer = None, recgonizer = None):
         self.reader = reader if reader else ImageReader()
         self.localizer = localizer if localizer else TextLocalizer()
         self.recgonizer = recgonizer if recgonizer else OcrCrops()
-    
+
     def detect(self, img):
         crops = self.localizer.process(self.reader.read(img))
         return self.recgonizer.ocr(crops)
