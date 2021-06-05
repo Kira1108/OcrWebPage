@@ -29,7 +29,7 @@ json_data = {
     "枪支弹药",
     "天气不错哟"
   ],
-  "paths": "C:/Users/wanghuan/Desktop/OcrSentence/app/datasets/test_imgs/cece.png"
+  "path": "C:/Users/wanghuan/Desktop/OcrSentence/app/datasets/test_imgs/cece.png"
 }
 
 get_page_result(json_data)
