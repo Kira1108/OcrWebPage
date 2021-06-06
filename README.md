@@ -12,6 +12,13 @@ pip install -r requirements.txt
 ### Step 3: Start Service on port 8000
 
 
+### Step 4: Stop Service
+```bash
+ps aux | grep uvicorn
+
+kill $(pgrep -P 19970)
+```
+
 ```bash
 nohup uvicorn app.main:app --reload --workers 3 --port 8000 &
 ```
