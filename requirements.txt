@@ -12,3 +12,4 @@ cairosvg
 Pillow
 pydantic
 pymysql
+virtualenv
