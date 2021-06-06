@@ -91,8 +91,8 @@ async def parse_page(urlInfo:UrlInfo):
         sql = "update URL set url_result = '{}' where id = '{}'".format(json.dumps(result, ensure_ascii=False), urlInfo.id)
         db.execute(sql)
     except Exception as e:
-        logger.Error("Error Writing DataBase")
-        logger.Error(e)
+        logger.error("Error Writing DataBase")
+        logger.error(e)
     return result
 
 
