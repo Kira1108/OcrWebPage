@@ -8,4 +8,7 @@ sklearn
 matplotlib
 seaborn
 pyyaml
-beautifulsoup4
+cairosvg
+Pillow
+pydantic
+pymysql
