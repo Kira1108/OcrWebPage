@@ -1,9 +1,19 @@
 # OcrWebPage
+### Step 1: Install python
 
+
+### Step 2: Install requirements
+```bash
+cd OcrWebPage
+
+pip install -r requirements.txt
+```
+
+### Step 3: Start Service on port 8000
 
 
 ```bash
-nohup uvicorn app.main:app --reload --workers 3 &
+nohup uvicorn app.main:app --reload --workers 3 --port 8000 &
 ```
 
 ```python
